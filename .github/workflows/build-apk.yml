@@ -27,10 +27,8 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Install Gradle & Build Tools
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y gradle android-sdk-build-tools
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
 
       - name: Generate Project Files & Config
         env:
@@ -40,7 +38,9 @@ jobs:
         run: python3 inject_config.py
 
       - name: Build APK with Gradle
-        run: gradle assembleDebug
+        run: |
+          chmod +x gradlew || true
+          gradle assembleDebug
 
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
