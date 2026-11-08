@@ -4,10 +4,10 @@ domain = os.getenv("TUNNEL_DOMAIN", "tunnel.example.com")
 secret = os.getenv("SECRET_KEY", "BrandNewSecureKey2026#")
 resolver = os.getenv("RESOLVER_IP", "1.1.1.1")
 
-# ۱. ساختار پوشه‌ها
+# ۱. ایجاد پوشه‌ها
 os.makedirs("app/src/main/java/com/example/dnstunnel", exist_ok=True)
 
-# ۲. فایل کانفیگ سکرت و دامین
+# ۲. تزریق تنظیمات
 with open("app/src/main/java/com/example/dnstunnel/TunnelConfig.java", "w") as f:
     f.write(f"""package com.example.dnstunnel;
 public class TunnelConfig {{
@@ -39,7 +39,7 @@ with open("app/src/main/AndroidManifest.xml", "w") as f:
 </manifest>
 """)
 
-# ۴. تنظیمات Gradle اصلی پروژه
+# ۴. تنظیمات build.gradle ریشه
 with open("build.gradle", "w") as f:
     f.write("""buildscript {
     repositories {
@@ -47,7 +47,7 @@ with open("build.gradle", "w") as f:
         mavenCentral()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:7.4.2'
+        classpath 'com.android.tools.build:gradle:8.1.1'
     }
 }
 allprojects {
@@ -61,12 +61,12 @@ allprojects {
 with open("settings.gradle", "w") as f:
     f.write("include ':app'\n")
 
-# ۵. تنظیمات Gradle بخش اپلیکیشن
-os.makedirs("app", exist_ok=True)
+# ۵. تنظیمات build.gradle ماژول app
 with open("app/build.gradle", "w") as f:
     f.write("""apply plugin: 'com.android.application'
 
 android {
+    namespace 'com.example.dnstunnel'
     compileSdkVersion 33
     defaultConfig {
         applicationId "com.example.dnstunnel"
@@ -81,12 +81,13 @@ dependencies {
 }
 """)
 
-# ۶. کد اصلی برنامه (MainActivity)
+# ۶. کد اصلی برنامه
 with open("app/src/main/java/com/example/dnstunnel/MainActivity.java", "w") as f:
     f.write("""package com.example.dnstunnel;
 import android.app.Activity;
 import android.os.Bundle;
 import android.widget.TextView;
+
 public class MainActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -98,4 +99,4 @@ public class MainActivity extends Activity {
 }
 """)
 
-print("✅ All project files generated successfully!")
+print("✅ Complete Android Project Generated!")
