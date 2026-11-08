@@ -7,21 +7,30 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Set up Java 17
+      - name: Set up JDK 17
         uses: actions/setup-java@v5
         with:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Build Simple Package
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Generate Project Files
+        env:
+          TUNNEL_DOMAIN: 'tunnel.example.com'
+          RESOLVER_IP: '1.1.1.1'
+          SECRET_KEY: "BrandNewSecureKey2026#"
+        run: python3 inject_config.py
+
+      - name: Build APK with Gradle
         run: |
-          mkdir -p app/build/outputs/apk/debug
-          echo "Dummy APK content for DNS Tunnel" > app/build/outputs/apk/debug/app-debug.apk
+          gradle assembleDebug
 
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
